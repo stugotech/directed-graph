@@ -12,6 +12,9 @@
     "type": "git",
     "url": "git+https://github.com/gordonmleigh/directed-graph.git"
   },
+  "files": [
+    "dist/lib/"
+  ],
   "author": "Gordon Mackenzie-Leigh <gordon@stugo.co.uk>",
   "license": "ISC",
   "bugs": {

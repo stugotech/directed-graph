@@ -1,5 +1,0 @@
-src/
-dist/test/
-.tscache
-tsconfig.json
-.gitignore
