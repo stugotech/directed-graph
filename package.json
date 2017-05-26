@@ -1,0 +1,31 @@
+{
+  "name": "directed-graph",
+  "version": "1.0.0",
+  "description": "Directed graph implementation",
+  "main": "dist/lib/index.js",
+  "types": "dist/lib/index.d.ts",
+  "scripts": {
+    "prepublish": "gulp",
+    "test": "ava --verbose dist/test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gordonmleigh/directed-graph.git"
+  },
+  "author": "Gordon Mackenzie-Leigh <gordon@stugo.co.uk>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gordonmleigh/directed-graph/issues"
+  },
+  "homepage": "https://github.com/gordonmleigh/directed-graph#readme",
+  "devDependencies": {
+    "@types/node": "^7.0.22",
+    "ava": "^0.19.1",
+    "del": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-merge": "^0.1.1",
+    "gulp-sourcemaps": "^2.6.0",
+    "gulp-typescript": "^3.1.6",
+    "typescript": "^2.3.3"
+  }
+}
