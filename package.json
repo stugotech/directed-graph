@@ -1,5 +1,5 @@
 {
-  "name": "directed-graph",
+  "name": "@stugotech/directed-graph",
   "version": "1.0.0",
   "description": "Directed graph implementation",
   "main": "dist/lib/index.js",
