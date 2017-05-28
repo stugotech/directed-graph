@@ -1,6 +1,6 @@
 {
   "name": "@stugotech/directed-graph",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Directed graph implementation",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
