@@ -9,8 +9,8 @@ export class DirectedGraph<T> {
   /**
    * Create a new instance.
    */
-  constructor() {
-    this._edges = new Map<T, T[]>();
+  constructor(edges?: Map<T, T[]>) {
+    this._edges = edges || new Map<T, T[]>();
   }
 
 
@@ -55,6 +55,16 @@ export class DirectedGraph<T> {
    */
   leaves(): T[] {
     return [...this._edges.entries()].filter(x => x[1].length === 0).map(x => x[0]);
+  }
+
+  
+  /**
+   * Create a shallow copy of this graph (copies edge map only).
+   */
+  shallowClone(): DirectedGraph<T> {
+    const edges = [...this._edges.entries()]
+      .map<[T, T[]]>(kv => [kv[0], [...kv[1]]]);
+    return new DirectedGraph<T>(new Map<T, T[]>(edges));
   }
 
 
