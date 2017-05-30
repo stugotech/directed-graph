@@ -94,57 +94,42 @@ export class DirectedGraph<T> {
   getAdjacencyToNode(root: T): Map<T, number> {
     const adjacencies = new Map<T, number>();
     const parents: T[] = [];
-    const stack: T[] = [];
 
-    stack.push(root);
+    const recurse = (node: T, level: number) => {
+      parents.push(node);
+      const adj = adjacencies.get(node);
 
-    while (stack.length > 0) {
-      const curr = stack[stack.length - 1] as T; // length > 0 so not undefined
-      const children = this._edges.get(curr);
+      if (adj === undefined || adj < level) {
+        adjacencies.set(node, level);
+        const children = this._edges.get(node);
 
-      if (children === undefined) {
-        throw new Error('unknown vertex');
-      }
-
-      if (parents.length > 0 && curr === parents[parents.length-1]) {
-        parents.pop();
-        stack.pop();
-        continue;
-      } 
-
-      // set the adjacency of the current node if on a new/longer path.
-      const adj = adjacencies.get(curr);
-
-      if (adj === undefined || adj < parents.length) {
-        adjacencies.set(curr, parents.length);
-      } else {
-        // abort this path if already seen
-        parents.pop();
-        stack.pop();
-        continue;
-      }
-
-      parents.push(curr);
-
-      for (let child of children) {
-        // loop detection
-        let i = parents.indexOf(child);
-
-        if (i > -1) {
-          // found circular reference
-          let path = '';
-          // build path for error
-          for (; i < parents.length; ++i) {
-            path += parents[i].toString();
-            path += ' -> ';
-          }
-          throw new Error('found circular reference ' + path + child.toString());
+        if (children === undefined) {
+          throw new Error(`unknown node '${node}'`);
         }
 
-        stack.push(child);
+        for (let child of children) {
+          this._checkCircularReference(parents, child);
+          recurse(child, level + 1);
+        }
       }
-    } // while (stack.length > 0)
 
+      parents.pop();
+    }
+
+    recurse(root, 0);
     return adjacencies;
+  }
+
+
+  /**
+   * Checks for the presence of node in parents and throws if found.
+   * @param parents A list of parents already visited.
+   * @param node The node to find in the parents.
+   */
+  private _checkCircularReference(parents: T[], node: T) {
+    let i = parents.indexOf(node);
+    if (i !== -1) {
+      throw new Error(`found circular reference ${parents.slice(i).join(' -> ')} -> ${node}`)
+    }
   }
 }

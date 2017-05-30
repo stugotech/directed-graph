@@ -89,8 +89,71 @@ test('getAdjacencyToNode() detects circular reference', it => {
   graph.addEdge('A', 'F'); // circular ref
 
   it.throws(() => graph.getAdjacencyToNode('X'), 
-    err => err instanceof Error && err.message === 'found circular reference F -> D -> A -> F'
+    err => err instanceof Error && err.message === 'found circular reference A -> F -> D -> A'
   );
+});
+
+
+test('complicated adjacency', it => {
+  const edges: { [k: string]: string[] } = {
+    AuthReadyStage: [ "MiddlewareReadyStage" ],
+    DbReadyStage: [ "AuthReadyStage", "DevSetup" ],
+    TokenAuthenticationMiddleware: [ "AuthReadyStage" ],
+    ConfigReadyStage: [ "DbReadyStage" ],
+    ContactSchema: [ "DbReadyStage", "ContactsResource" ],
+    CredentialSchema: [ "DbReadyStage" ],
+    OrganisationUserSchema: [ "DbReadyStage" ],
+    OrganisationSchema: [ "DbReadyStage", "UserSchema", "OrganisationsResource" ],
+    UserSchema: [ "DbReadyStage", "ContactSchema", "CredentialSchema", "OrganisationUserSchema", "UsersResouce" ],
+    __root__: [ "ConfigReadyStage", "BodyParserMiddleware", "CorsMiddleware", "RequestTracingMiddleware", "TokenAuthenticationMiddleware", "AuthTokensResource", "OrganisationSchema" ],
+    MiddlewareReadyStage: [ "RoutingReadyStage" ],
+    BodyParserMiddleware: [ "MiddlewareReadyStage" ],
+    CorsMiddleware: [ "MiddlewareReadyStage" ],
+    RequestTracingMiddleware: [ "MiddlewareReadyStage" ],
+    RoutingReadyStage: [ ],
+    AuthTokensResource: [ "RoutingReadyStage" ],
+    ContactsResource: [ "RoutingReadyStage" ],
+    OrganisationsResource: [ "RoutingReadyStage" ],
+    UsersResouce: [ "RoutingReadyStage" ],
+    DevSetup: [ ]
+  };
+  const expected = {
+    __root__: 0,
+    ConfigReadyStage: 1,
+    DbReadyStage: 4,
+    AuthReadyStage: 5,
+    MiddlewareReadyStage: 6,
+    RoutingReadyStage: 7,
+    DevSetup: 5,
+    BodyParserMiddleware: 1,
+    CorsMiddleware: 1,
+    RequestTracingMiddleware: 1,
+    TokenAuthenticationMiddleware: 1,
+    AuthTokensResource: 1,
+    OrganisationSchema: 1,
+    UserSchema: 2,
+    ContactSchema: 3,
+    ContactsResource: 4,
+    CredentialSchema: 3,
+    OrganisationUserSchema: 3,
+    UsersResouce: 3,
+    OrganisationsResource: 2
+  };
+  
+  const graph = new DirectedGraph<string>();
+
+  for (let module in edges) {
+    graph.addVertex(module);
+
+    for (let child of edges[module]) {
+      graph.addEdge(module, child);
+    }
+  }
+
+  const adjacencies = [...graph.getAdjacencyToNode('__root__').entries()]
+    .reduce((m: { [k: string]: number }, kv) => { m[kv[0]] = kv[1]; return m; }, {});
+
+  it.deepEqual(adjacencies, expected);
 });
 
 
